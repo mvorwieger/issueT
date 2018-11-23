@@ -2,12 +2,11 @@
 const fs = require('fs');
 const axios = require('axios');
 const filePath = './examples/index.js';
-const username = 'mvorwieger';
-const password = 'Grundig1999';
-const repoLink = 'mvorwieger/testRepo';
 const todoRegExp = () => new RegExp(/^(.*)TODO: (.*)$/gm);
 const gitHubUrlRegExp = () => new RegExp(/^(.*)url = (.*)$/gm);
 const githubApi = 'api.github.com';
+
+const [nodeLocation, currentPath, username, password] = process.argv;
 
 const getTodoCommentFromFile = async (pathToFile) => {
     return new Promise((res, rej) => {
@@ -57,10 +56,11 @@ const getGithubUrlInPath = async (path) => {
     const regExObjects = await getTodoCommentFromFile(filePath);
     const comments = regExObjects.map((regexobj) => getStuffOutOfRegExObj(regexobj));
     const gitHubUrl = await getGithubUrlInPath('./');
-    gitHubUrl.split("github.com");
-    axios.get(`https://${username}:${password}@${githubApi}`)
+    const repoPath = gitHubUrl.split('github.com');
+
+    axios.get(`https://${username}:${password}@${githubApi}${repoPath}`)
         .then(res => {
-            //console.log(res)
+            console.log(res)
         })
         .catch(e => {
             console.log(e);
