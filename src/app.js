@@ -28,7 +28,7 @@ const getTodoCommentFromFile = async (pathToFile) => {
 const getStuffOutOfRegExObj = (regexthingy) => {
     const [fullComment, _, comment, ...rest] = regexthingy;
 
-    return {fullComment, comment};
+    return { fullComment, comment };
 };
 
 const postIssueOnGithub = async (username, password, githubrepo) => {
@@ -50,7 +50,7 @@ const getGithubUrlInPath = async (path) => {
     }));
 };
 
-const getGihubIssues = (username, password, githubApi, repoPath) => {
+const getIssues = (username, password, githubApi, repoPath) => {
     axios.get(`https://${username}:${password}@${githubApi}/repos/${repoPath}/issues`)
         .then(res => {
             console.log(res)
@@ -60,19 +60,31 @@ const getGihubIssues = (username, password, githubApi, repoPath) => {
         });
 }
 
-(async () => {
+const postIssue = (username, password, githubApi, repoPath, title, body) => {
+    const issueDetails = {
+        title,
+        body,
+    }
 
+    const url = `https://${username}:${password}@${githubApi}/repos${repoPath}/issues`
+
+    return axios.post(url, (issueDetails))
+}
+
+(async () => {
     const [nodeLocation, currentPath, username, password] = process.argv;
     const regExObjects = await getTodoCommentFromFile(filePath);
     const comments = regExObjects.map((regexobj) => getStuffOutOfRegExObj(regexobj));
     const gitHubUrl = await getGithubUrlInPath('./');
-    const repoPath = gitHubUrl.split('github.com:')[1];
+    const repoPath = gitHubUrl.split('github.com')[1];
     const splitAwayDotGit = repoPath.split(".git")[0]
-    console.log(`
-    username: ${username}
-    password: ${password}
-    githubApi: ${githubApi}
-    repoPath: ${splitAwayDotGit}`)
 
-    
+    comments.forEach(async (comment) => {
+        try {
+            const posted = await postIssue(username, password, githubApi, splitAwayDotGit, comment.comment, comment.comment)
+            console.log(posted)
+        } catch (e) {
+            console.log(e)
+        }
+    })
 })();
