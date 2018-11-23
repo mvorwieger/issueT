@@ -6,8 +6,6 @@ const todoRegExp = () => new RegExp(/^(.*)TODO: (.*)$/gm);
 const gitHubUrlRegExp = () => new RegExp(/^(.*)url = (.*)$/gm);
 const githubApi = 'api.github.com';
 
-const [nodeLocation, currentPath, username, password] = process.argv;
-
 const getTodoCommentFromFile = async (pathToFile) => {
     return new Promise((res, rej) => {
         fs.readFile(pathToFile, (err, data) => {
@@ -52,17 +50,29 @@ const getGithubUrlInPath = async (path) => {
     }));
 };
 
-(async () => {
-    const regExObjects = await getTodoCommentFromFile(filePath);
-    const comments = regExObjects.map((regexobj) => getStuffOutOfRegExObj(regexobj));
-    const gitHubUrl = await getGithubUrlInPath('./');
-    const repoPath = gitHubUrl.split('github.com');
-
-    axios.get(`https://${username}:${password}@${githubApi}${repoPath}`)
+const getGihubIssues = (username, password, githubApi, repoPath) => {
+    axios.get(`https://${username}:${password}@${githubApi}/repos/${repoPath}/issues`)
         .then(res => {
             console.log(res)
         })
         .catch(e => {
             console.log(e);
         });
+}
+
+(async () => {
+
+    const [nodeLocation, currentPath, username, password] = process.argv;
+    const regExObjects = await getTodoCommentFromFile(filePath);
+    const comments = regExObjects.map((regexobj) => getStuffOutOfRegExObj(regexobj));
+    const gitHubUrl = await getGithubUrlInPath('./');
+    const repoPath = gitHubUrl.split('github.com:')[1];
+    const splitAwayDotGit = repoPath.split(".git")[0]
+    console.log(`
+    username: ${username}
+    password: ${password}
+    githubApi: ${githubApi}
+    repoPath: ${splitAwayDotGit}`)
+
+    
 })();
