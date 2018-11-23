@@ -4,9 +4,12 @@
   "description": "A Tool that lets you create github issues from your TODO comments",
   "main": "app.js",
   "scripts": {
-      "start": "node ./src/app.js"
+    "start": "node ./src/app.js"
   },
   "keywords": [],
   "author": "Michel Vorwieger",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^0.18.0"
+  }
 }
