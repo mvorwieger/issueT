@@ -1,4 +1,4 @@
-#issueT
+# issueT
 
 issueT is a small CLI to parse TODO comments out of your Source code and post them as Issues on Github.
 
