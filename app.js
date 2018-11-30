@@ -20,8 +20,7 @@ const getTodoCommentFromFile = pathToFile => {
             const fileContent = (data.toString());
             const allTodoComments = fileContent.match(todoRegExp());
             if (allTodoComments) {
-                const regexGroups = allTodoComments.map(
-                    comment => { return todoRegExp().exec(comment); });
+                const regexGroups = allTodoComments.map(comment => todoRegExp().exec(comment));
                 res(regexGroups.map((regexobj) => getStuffOutOfRegExObj(regexobj)))
             } else {
                 rej("no Todo Comments Found")
@@ -73,8 +72,7 @@ const getGithubUrlInPath = path => {
  */
 const getIssues = (username, password, githubApi, repoPath) => {
     return axios
-        .get(`https://${username}:${password}@${githubApi}/repos/${
-            repoPath}/issues`)
+        .get(`https://${username}:${password}@${githubApi}/repos/${repoPath}/issues`)
 }
 
 /**
@@ -94,15 +92,16 @@ const postIssue = (username, password, githubApi, repoPath, title, body) => {
 
     const url = `https://${username}:${password}@${githubApi}/repos${repoPath}/issues`
 
-    return axios.post(url, (issueDetails))
+    return axios.post(url, issueDetails)
 }
 
 (async () => {
     //TODO: Look if there is some cleaner way to get arguments
-    //TODO: Look for a way to cache username and password
+    //TODO: Look for a way to cache username and password (Config files ?)
     const [nodeLocation, currentPath, filePath, username, password] = process.argv;
     const comments = await getTodoCommentFromFile(filePath);
     const gitHubUrl = await getGithubUrlInPath('./');
+    // 1 = everything after github.com | 0 = everything before .git
     const repoPath = gitHubUrl.split('github.com')[1].split(".git")[0];
 
     // TODO: First get all Comments and dont post duplicates
