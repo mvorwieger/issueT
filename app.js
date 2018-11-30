@@ -6,34 +6,33 @@ const todoRegExp = () => new RegExp(/^(.*)TODO: (.*)$/gm);
 const gitHubUrlRegExp = () => new RegExp(/^(.*)url = (.*)$/gm);
 const githubApi = 'api.github.com';
 
-const getTodoCommentFromFile =
-  (pathToFile) => {
-    return new Promise((res, rej) => {
-      fs.readFile(pathToFile, (err, data) => {
-        if (err) {
-          rej(err);
-        }
+const getTodoCommentFromFile = pathToFile => {
+  return new Promise((res, rej) => {
+    fs.readFile(pathToFile, (err, data) => {
+      if (err) {
+        rej(err);
+      }
 
-        const fileContent = (data.toString());
-        const allTodoComments = fileContent.match(todoRegExp());
-        if (allTodoComments) {
-          const regexGroups = allTodoComments.map(
-            comment => { return todoRegExp().exec(comment); });
-          res(regexGroups);
-        } else {
-          rej("no Todo Comments Found")
-        }
-      });
+      const fileContent = (data.toString());
+      const allTodoComments = fileContent.match(todoRegExp());
+      if (allTodoComments) {
+        const regexGroups = allTodoComments.map(
+          comment => { return todoRegExp().exec(comment); });
+        res(regexGroups);
+      } else {
+        rej("no Todo Comments Found")
+      }
     });
-  };
+  });
+};
 
-const getStuffOutOfRegExObj = (regexthingy) => {
+const getStuffOutOfRegExObj = regexthingy => {
   const [fullComment, _, comment, ...rest] = regexthingy;
 
   return { fullComment, comment };
 };
 
-const getGithubUrlInPath = (path) => {
+const getGithubUrlInPath = path => {
   return new Promise(((resolve, reject) => {
     fs.readFile(path + '/.git/config', (err, fileBuffer) => {
       if (err) {
@@ -51,11 +50,9 @@ const getGithubUrlInPath = (path) => {
 };
 
 const getIssues = (username, password, githubApi, repoPath) => {
-  axios
+  return axios
     .get(`https://${username}:${password}@${githubApi}/repos/${
       repoPath}/issues`)
-    .then(res => { console.log(res) })
-    .catch(e => { console.log(e); });
 }
 
 const postIssue = (username, password, githubApi,
@@ -90,6 +87,7 @@ const postIssue = (username, password, githubApi,
       console.log(e)
     }
 
-    console.log(`${arr.length} issues created`);
   })
+
+  console.log(`${comments.length} issues created`);
 })();
