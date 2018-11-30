@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-// TODO: get filepath from command line args
 const axios = require("axios");
 const fs = require("fs");
 
@@ -74,6 +73,7 @@ const postIssue = (username, password, githubApi,
 
 (async () => {
   const [nodeLocation, currentPath, filePath, username, password] = process.argv;
+  console.log(filePath, username, password);
   const regExObjects = await getTodoCommentFromFile(filePath);
   const comments =
     regExObjects.map((regexobj) => getStuffOutOfRegExObj(regexobj));
@@ -81,17 +81,15 @@ const postIssue = (username, password, githubApi,
   const repoPath = gitHubUrl.split('github.com')[1];
   const splitAwayDotGit = repoPath.split(".git")[0]
 
-  // TODO: Add some option to add body to a github issue instead of it just
-  // being the same as the body
+  // TODO: Add some option to add body to a github issue instead of it just being the same as the body
 
-  comments.forEach(async (comment) => {
+  comments.forEach(async (comment, _, arr) => {
     try {
-      const posted =
-        await postIssue(username, password, githubApi, splitAwayDotGit,
-          comment.comment, comment.comment)
-      console.log(posted)
+      const posted = await postIssue(username, password, githubApi, splitAwayDotGit, comment.comment, comment.comment)
     } catch (e) {
       console.log(e)
     }
+
+    console.log(`${arr.length} issues created`);
   })
 })();
