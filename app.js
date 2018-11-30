@@ -8,9 +8,9 @@ const gitHubUrlRegExp = () => new RegExp(/^(.*)url = (.*)$/gm);
 const githubApi = 'api.github.com';
 
 const getTodoCommentFromFile =
-    (pathToFile: string): Promise<RegExpExecArray[]> => {
-      return new Promise((res: Function, rej: Function) => {
-        fs.readFile(pathToFile, (err: Error, data: Buffer) => {
+    (pathToFile) => {
+      return new Promise((res, rej) => {
+        fs.readFile(pathToFile, (err, data) => {
           if (err) {
             rej(err);
           }
@@ -28,13 +28,13 @@ const getTodoCommentFromFile =
       });
     };
 
-const getStuffOutOfRegExObj = (regexthingy: RegExpExecArray) => {
+const getStuffOutOfRegExObj = (regexthingy) => {
   const [fullComment, _, comment, ...rest] = regexthingy;
 
   return {fullComment, comment};
 };
 
-const getGithubUrlInPath = (path: string): Promise<string> => {
+const getGithubUrlInPath = (path: string) => {
   return new Promise(((resolve, reject) => {
     fs.readFile(path + '/.git/config', (err, fileBuffer) => {
       if (err) {
@@ -51,9 +51,7 @@ const getGithubUrlInPath = (path: string): Promise<string> => {
   }));
 };
 
-const getIssues =
-    (username: string, password: string, githubApi: string, repoPath: string):
-        void => {
+const getIssues = (username, password, githubApi, repoPath) => {
           axios
               .get(`https://${username}:${password}@${githubApi}/repos/${
                   repoPath}/issues`)
@@ -61,9 +59,8 @@ const getIssues =
               .catch(e => { console.log(e); });
         }
 
-const postIssue = (username: string, password: string, githubApi: string,
-                   repoPath: string, title: string, body: string):
-    Promise<any> => {
+const postIssue = (username, password, githubApi,
+                   repoPath, title, body) => {
       const issueDetails = {
         title,
         body,

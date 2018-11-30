@@ -3,8 +3,11 @@
   "version": "0.0.1",
   "description": "A Tool that lets you create github issues from your TODO comments",
   "main": "app.js",
+  "bin": {
+    "issueT": "app.js"
+  },
   "scripts": {
-    "start": "node ./src/app.js"
+    "start": "node app.js"
   },
   "keywords": [],
   "author": "Michel Vorwieger",
