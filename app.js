@@ -72,7 +72,7 @@ const getGithubUrlInPath = path => {
  */
 const getIssues = (username, password, githubApi, repoPath) => {
     return axios
-        .get(`https://${username}:${password}@${githubApi}/repos/${repoPath}/issues`)
+        .get(`https://${username}:${password}@${githubApi}/repos${repoPath}/issues`)
 }
 
 /**
@@ -106,13 +106,18 @@ const postIssue = (username, password, githubApi, repoPath, title, body) => {
 
     // TODO: First get all Comments and dont post duplicates
     // TODO: Add some option to add body to a github issue instead of it just being the same as the body
-    comments.forEach(async (comment, _, arr) => {
-        try {
-            const posted = await postIssue(username, password, githubApi, repoPath, comment.comment, comment.comment)
-        } catch (e) {
-            console.log(e)
-        }
-    })
 
-    console.log(`${comments.length} issues created`);
+    try {
+        const response = await getIssues(username, password, githubApi, repoPath)
+        const postedGithubIssues = response.data.map(a => a.body)
+        const newComments = comments.filter(comment => !postedGithubIssues.includes(comment.comment))
+
+        newComments.forEach(async (comment, _, arr) => {
+                const posted = await postIssue(username, password, githubApi, repoPath, comment.comment, comment.comment)
+        })
+        console.log(`${newComments.length} issues created`);
+        
+    } catch(e) {
+        console.log("something went wrong, please check your username and or password")
+    }
 })();
