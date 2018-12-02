@@ -13,4 +13,4 @@ how to use:
 ```bash
 issueT <pathToFile> <username> <password>
 ```
-
+3. it will now read all the TODO-comments in your File (<pathToFile>), and post them on Github. 
