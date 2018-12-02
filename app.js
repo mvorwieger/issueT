@@ -115,6 +115,7 @@ const postIssue = (username, password, githubApi, repoPath, title, body) => {
         const repoPath = gitHubUrl.split('github.com')[1].split(".git")[0];
 
         // TODO: Add some option to add body to a github issue instead of it just being the same as the body
+        // TODO: Add a Logger or Debugging mode later on so we can get real errors
 
         const response = await getIssues(username, password, githubApi, repoPath)
         const postedGithubIssues = response.data.map(a => a.body)
