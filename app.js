@@ -71,8 +71,12 @@ const getGithubUrlInPath = path => {
  * @returns {Promise<string[]>}
  */
 const getIssues = (username, password, githubApi, repoPath) => {
-    return axios
-        .get(`https://${username}:${password}@${githubApi}/repos${repoPath}/issues`)
+    return new Promise((res, rej) => {
+        axios
+            .get(`https://${username}:${password}@${githubApi}/repos${repoPath}/issues`)
+            .then(res)
+            .catch(e => rej("Something went wrong while fetching your Issues, Please check your Username and/or password"))
+    })
 }
 
 /**
@@ -92,7 +96,12 @@ const postIssue = (username, password, githubApi, repoPath, title, body) => {
 
     const url = `https://${username}:${password}@${githubApi}/repos${repoPath}/issues`
 
-    return axios.post(url, issueDetails)
+    return new Promise((res, rej) => {
+        axios
+            .post(url, issueDetails)
+            .then(res)
+            .catch(e => rej("Something went wrong while Posting your Issue, Please check your username and/or password"))
+    })
 }
 
 (async () => {
@@ -105,7 +114,6 @@ const postIssue = (username, password, githubApi, repoPath, title, body) => {
         // 1 = everything after github.com | 0 = everything before .git
         const repoPath = gitHubUrl.split('github.com')[1].split(".git")[0];
 
-        // TODO: First get all Comments and dont post duplicates
         // TODO: Add some option to add body to a github issue instead of it just being the same as the body
 
         const response = await getIssues(username, password, githubApi, repoPath)
@@ -118,6 +126,6 @@ const postIssue = (username, password, githubApi, repoPath, title, body) => {
         console.log(`${newComments.length} issues created`);
         
     } catch(e) {
-        console.log("something went wrong, please check your username and or password")
+        console.log(e)
     }
 })();
