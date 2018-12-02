@@ -56,7 +56,7 @@ const getGithubUrlInPath = path => {
             if (result != null) {
                 resolve(result[2])
             } else {
-                reject("no remote gihub repository inside .git/config")
+                reject("Please check your current path, there was no .git/config found in your current path")
             }
         });
     }));
@@ -96,18 +96,18 @@ const postIssue = (username, password, githubApi, repoPath, title, body) => {
 }
 
 (async () => {
-    //TODO: Look if there is some cleaner way to get arguments
-    //TODO: Look for a way to cache username and password (Config files ?)
-    const [nodeLocation, currentPath, filePath, username, password] = process.argv;
-    const comments = await getTodoCommentFromFile(filePath);
-    const gitHubUrl = await getGithubUrlInPath('./');
-    // 1 = everything after github.com | 0 = everything before .git
-    const repoPath = gitHubUrl.split('github.com')[1].split(".git")[0];
-
-    // TODO: First get all Comments and dont post duplicates
-    // TODO: Add some option to add body to a github issue instead of it just being the same as the body
-
     try {
+        //TODO: Look if there is some cleaner way to get arguments
+        //TODO: Look for a way to cache username and password (Config files ?)
+        const [nodeLocation, currentPath, filePath, username, password] = process.argv;
+        const gitHubUrl = await getGithubUrlInPath('./');
+        const comments = await getTodoCommentFromFile(filePath);
+        // 1 = everything after github.com | 0 = everything before .git
+        const repoPath = gitHubUrl.split('github.com')[1].split(".git")[0];
+
+        // TODO: First get all Comments and dont post duplicates
+        // TODO: Add some option to add body to a github issue instead of it just being the same as the body
+
         const response = await getIssues(username, password, githubApi, repoPath)
         const postedGithubIssues = response.data.map(a => a.body)
         const newComments = comments.filter(comment => !postedGithubIssues.includes(comment.comment))
