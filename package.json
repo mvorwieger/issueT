@@ -1,20 +1,20 @@
 {
-  "name": "issue-t",
-  "version": "0.0.7",
-  "description": "A Tool that lets you create github issues from your TODO comments",
-  "main": "app.js",
-  "bin": {
-    "issueT": "app.js"
-  },
-  "scripts": {
-    "start": "node app.js"
-  },
-  "keywords": [],
-  "author": "Michel Vorwieger",
-  "license": "MIT",
-  "dependencies": {
-    "axios": "^0.18.0",
-    "commander": "^2.19.0",
-    "inquirer": "^6.2.1"
-  }
+    "name": "issue-t",
+    "version": "0.0.8",
+    "description": "A Tool that lets you create github issues from your TODO comments",
+    "main": "app.js",
+    "bin": {
+        "issueT": "app.js"
+    },
+    "scripts": {
+        "start": "node app.js"
+    },
+    "keywords": [],
+    "author": "Michel Vorwieger",
+    "license": "MIT",
+    "dependencies": {
+        "axios": "^0.18.0",
+        "commander": "^2.19.0",
+        "inquirer": "^6.2.1"
+    }
 }
