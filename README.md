@@ -11,6 +11,6 @@ how to use:
 1. navigate to the root directory of your repository. (This is important because issueT will look for `.git/config`)
 2. execute this command with your informations:
 ```bash
-issueT <pathToFile> <username> <password>
+issueT -u <username> -p <password> <pathToFile>
 ```
 3. it will now read all the TODO-comments in your File (<pathToFile>), and post them on Github. 
