@@ -7,7 +7,7 @@ const gitHubUrlRegExp = () => new RegExp(/^(.*)url = (.*)$/gm);
 const githubApi = 'api.github.com';
 
 /**
- * Gives you the TODO comments from the given file 
+ * Gives you the todo comments from the given file 
  * @param {string} pathToFile 
  */
 const getTodoCommentFromFile = pathToFile => {
@@ -104,7 +104,6 @@ const postIssue = (username, password, githubApi, repoPath, title, body) => {
     // 1 = everything after github.com | 0 = everything before .git
     const repoPath = gitHubUrl.split('github.com')[1].split(".git")[0];
 
-    // TODO: First get all Comments and dont post duplicates
     // TODO: Add some option to add body to a github issue instead of it just being the same as the body
 
     try {
