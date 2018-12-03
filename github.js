@@ -1,26 +1,4 @@
-/**
- * Gives the current origin url from .git/config 
- * this might be a problem later on because it only works 
- * in the root path of the project (the location where .git/config is located)
- * @param {string} path 
- */
-const getGithubUrlInPath = path => {
-    return new Promise(((resolve, reject) => {
-        fs.readFile(path + '/.git/config', (err, fileBuffer) => {
-            if (err) {
-                reject(err);
-                return;
-            }
-            const result = gitHubUrlRegExp().exec(fileBuffer.toString());
-            if (result != null) {
-                resolve(result[2])
-            } else {
-                reject("no remote gihub repository inside .git/config")
-            }
-        });
-    }));
-};
-
+const axios = require('axios');
 /**
  * Gives you the current Open Issues for your origin 
  * @param {string} username 
@@ -30,8 +8,14 @@ const getGithubUrlInPath = path => {
  * @returns {Promise<string[]>}
  */
 const getIssues = (username, password, githubApi, repoPath) => {
-    return axios
-        .get(`https://${username}:${password}@${githubApi}/repos${repoPath}/issues`)
+    return new Promise((res, rej) => {
+        axios
+            .get(`https://${username}:${password}@${githubApi}/repos${repoPath}/issues`)
+            .then(res)
+            .catch(e => {
+                rej("Error while fetching your Issues, please check your credentials")
+            })
+    })
 }
 
 /**
@@ -51,5 +35,13 @@ const postIssue = (username, password, githubApi, repoPath, title, body) => {
 
     const url = `https://${username}:${password}@${githubApi}/repos${repoPath}/issues`
 
-    return axios.post(url, issueDetails)
+    return new Promise((res, rej) => {
+        axios.post(url, issueDetails)
+            .then(res)
+            .catch(e => {
+                rej("Error while posting your Issues")
+            })
+    })
 }
+
+module.exports = { getIssues, postIssue }
