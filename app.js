@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 const axios = require("axios");
 const fs = require("fs");
+const { postIssue, getIssues } = require('./github')
+const getCliData = require('./cli')
 
 const todoRegExp = () => new RegExp(/^(.*)TODO: (.*)$/gm);
 const gitHubUrlRegExp = () => new RegExp(/^(.*)url = (.*)$/gm);
@@ -62,43 +64,11 @@ const getGithubUrlInPath = path => {
     }));
 };
 
-/**
- * Gives you the current Open Issues for your origin 
- * @param {string} username 
- * @param {string} password 
- * @param {string} githubApi 
- * @param {string} repoPath 
- * @returns {Promise<string[]>}
- */
-const getIssues = (username, password, githubApi, repoPath) => {
-    return axios
-        .get(`https://${username}:${password}@${githubApi}/repos${repoPath}/issues`)
-}
-
-/**
- * Posts a Issue to Github with the given title and body
- * @param {string} username 
- * @param {string} password 
- * @param {string} githubApi 
- * @param {string} repoPath 
- * @param {string} title 
- * @param {string} body 
- */
-const postIssue = (username, password, githubApi, repoPath, title, body) => {
-    const issueDetails = {
-        title,
-        body,
-    }
-
-    const url = `https://${username}:${password}@${githubApi}/repos${repoPath}/issues`
-
-    return axios.post(url, issueDetails)
-}
-
 (async () => {
     //TODO: Look if there is some cleaner way to get arguments
     //TODO: Look for a way to cache username and password (Config files ?)
     const [nodeLocation, currentPath, filePath, username, password] = process.argv;
+    const { filePath, username, password } = getCliData();
     const comments = await getTodoCommentFromFile(filePath);
     const gitHubUrl = await getGithubUrlInPath('./');
     // 1 = everything after github.com | 0 = everything before .git
@@ -112,11 +82,11 @@ const postIssue = (username, password, githubApi, repoPath, title, body) => {
         const newComments = comments.filter(comment => !postedGithubIssues.includes(comment.comment))
 
         newComments.forEach(async (comment, _, arr) => {
-                const posted = await postIssue(username, password, githubApi, repoPath, comment.comment, comment.comment)
+            const posted = await postIssue(username, password, githubApi, repoPath, comment.comment, comment.comment)
         })
         console.log(`${newComments.length} issues created`);
-        
-    } catch(e) {
+
+    } catch (e) {
         console.log("something went wrong, please check your username and or password")
     }
 })();
