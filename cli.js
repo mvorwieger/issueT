@@ -5,10 +5,9 @@ program
     .option('-p, --password <n>', 'Github password')
     .option('-u, --username <n>', 'Github username')
     .parse(process.argv);
-module.exports = () => {
-    return {
-        filePath: program.file,
-        password: program.password,
-        username: program.username
-    }
+
+module.exports = {
+    username: program.username,
+    password: program.password,
+    path: program.args[0]
 }

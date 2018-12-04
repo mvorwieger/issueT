@@ -6,12 +6,7 @@ const todoRegExp = () => new RegExp(/^(.*)TODO: (.*)$/gm);
 const gitHubUrlRegExp = () => new RegExp(/^(.*)url = (.*)$/gm);
 const githubApi = 'api.github.com';
 const program = require('commander')
-program
-    .version('0.1.0')
-    .usage('[options] <file ...>')
-    .option('-p, --password <n>', 'Github password')
-    .option('-u, --username <n>', 'Github username')
-    .parse(process.argv);
+const { username, password, path } = require("./cli")
 
 /**
  * Gives you the todo comments from the given file 
@@ -73,13 +68,10 @@ const getGithubUrlInPath = path => {
     try {
         //TODO: Look if there is some cleaner way to get arguments
         //TODO: Look for a way to cache username and password (Config files ?)
-        const { args, username, password } = program;
-        const filePath = args[0]
-        const comments = await getTodoCommentFromFile(filePath);
+        const comments = await getTodoCommentFromFile(path);
         const gitHubUrl = await getGithubUrlInPath('./');
         // 1 = everything after github.com | 0 = everything before .git
         const repoPath = gitHubUrl.split('github.com')[1].split(".git")[0];
-
         // TODO: Add some option to add body to a github issue instead of it just being the same as the body
 
         const response = await getIssues(username, password, githubApi, repoPath)
