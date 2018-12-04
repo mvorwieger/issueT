@@ -79,6 +79,7 @@ const getGithubUrlInPath = path => {
         const newComments = comments.filter(comment => !postedGithubIssues.includes(comment.comment))
 
         newComments.forEach(async (comment, _, arr) => {
+
             const posted = await postIssue(username, password, githubApi, repoPath, comment.comment, comment.comment)
         })
         console.log(`${newComments.length} issues created`);
