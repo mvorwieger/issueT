@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 const fs = require("fs");
+const { promisify } = require("util");
+const readFile = promisify(fs.readFile)
 const { postIssue, getIssues } = require('./github')
 const getCliData = require('./cli')
 const todoRegExp = () => new RegExp(/^(.*)TODO: (.*)$/gm);
@@ -12,23 +14,16 @@ const { username, password, path } = require("./cli")
  * Gives you the todo comments from the given file 
  * @param {string} pathToFile 
  */
-const getTodoCommentFromFile = pathToFile => {
-    return new Promise((res, rej) => {
-        fs.readFile(pathToFile, (err, data) => {
-            if (err) {
-                rej(err);
-            }
-
-            const fileContent = (data.toString());
-            const allTodoComments = fileContent.match(todoRegExp());
-            if (allTodoComments) {
-                const regexGroups = allTodoComments.map(comment => todoRegExp().exec(comment));
-                res(regexGroups.map((regexobj) => getStuffOutOfRegExObj(regexobj)))
-            } else {
-                rej("no Todo Comments Found")
-            }
-        });
-    });
+const getTodoCommentFromFile = async (pathToFile) => {
+    const data = await readFile(pathToFile);
+    const fileContent = (data.toString());
+    const allTodoComments = fileContent.match(todoRegExp());
+    if (allTodoComments) {
+        const regexGroups = allTodoComments.map(comment => todoRegExp().exec(comment));
+        return (regexGroups.map((regexobj) => getStuffOutOfRegExObj(regexobj)))
+    } else {
+        throw new Error("no Todo Comments Found")
+    }
 };
 
 /**
