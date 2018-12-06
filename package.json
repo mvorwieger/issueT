@@ -1,6 +1,6 @@
 {
     "name": "issue-t",
-    "version": "0.0.9",
+    "version": "0.0.10",
     "description": "A Tool that lets you create github issues from your TODO comments",
     "main": "app.js",
     "bin": {
