@@ -42,21 +42,14 @@ const getStuffOutOfRegExObj = regexthingy => {
  * in the root path of the project (the location where .git/config is located)
  * @param {string} path 
  */
-const getGithubUrlInPath = path => {
-    return new Promise(((resolve, reject) => {
-        fs.readFile(path + '/.git/config', (err, fileBuffer) => {
-            if (err) {
-                reject(err);
-                return;
-            }
-            const result = gitHubUrlRegExp().exec(fileBuffer.toString());
-            if (result != null) {
-                resolve(result[2])
-            } else {
-                reject("Please check your current path, there was no .git/config found in your current path")
-            }
-        });
-    }));
+const getGithubUrlInPath = async (path) => {
+    const fileBuffer = await readFile(path + '/.git/config')
+    const result = gitHubUrlRegExp().exec(fileBuffer.toString());
+    if (result != null) {
+        resolve(result[2])
+    } else {
+        throw new Error("Please check your current path, there was no .git/config found in your current path")
+    }
 };
 
 (async () => {
@@ -74,7 +67,6 @@ const getGithubUrlInPath = path => {
         const newComments = comments.filter(comment => !postedGithubIssues.includes(comment.comment))
 
         newComments.forEach(async (comment, _, arr) => {
-
             const posted = await postIssue(username, password, githubApi, repoPath, comment.comment, comment.comment)
         })
         console.log(`${newComments.length} issues created`);
