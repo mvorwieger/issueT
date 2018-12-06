@@ -46,7 +46,7 @@ const getGithubUrlInPath = async (path) => {
     const fileBuffer = await readFile(path + '/.git/config')
     const result = gitHubUrlRegExp().exec(fileBuffer.toString());
     if (result != null) {
-        resolve(result[2])
+        return result[2]
     } else {
         throw new Error("Please check your current path, there was no .git/config found in your current path")
     }
