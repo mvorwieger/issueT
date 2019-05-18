@@ -1,18 +1,18 @@
 #!/usr/bin/env node
 const fs = require("fs");
-const { promisify } = require("util");
+const {promisify} = require("util");
 const readFile = promisify(fs.readFile)
-const { postIssue, getIssues } = require('./github')
+const {postIssue, getIssues} = require('./github')
 const getCliData = require('./cli')
 const todoRegExp = () => new RegExp(/^(.*)TODO: (.*)$/gm);
 const gitHubUrlRegExp = () => new RegExp(/^(.*)url = (.*)$/gm);
 const githubApi = 'api.github.com';
 const program = require('commander')
-const { username, password, path } = require("./cli")
+const {username, password, path} = require("./cli")
 
 /**
- * Gives you the todo comments from the given file 
- * @param {string} pathToFile 
+ * Gives you the todo comments from the given file
+ * @param {string} pathToFile
  */
 const getTodoCommentFromFile = async (pathToFile) => {
     const data = await readFile(pathToFile);
@@ -27,23 +27,51 @@ const getTodoCommentFromFile = async (pathToFile) => {
 };
 
 /**
- * A helper function to parse out the comments from the RegEx Arrays 
- * @param {Array<any>} regexthingy 
+ * A helper function to parse out the comments from the RegEx Arrays
+ * @param {Array<any>} regexthingy
  */
 const getStuffOutOfRegExObj = regexthingy => {
     const [fullComment, _, comment, ...rest] = regexthingy;
 
-    return { fullComment, comment };
+    return {fullComment, comment};
 };
 
+const readFileRecursivelyUpwards = async (path, times) => {
+    let fileNotFound = true;
+    let fileBuffer = undefined;
+    let prefix = "";
+    let totalPath = () => prefix + path;
+    let counter = 0;
+
+    while (fileNotFound && counter < times) {
+        try {
+            fileBuffer = await readFile(totalPath());
+            fileNotFound = false;
+        } catch (e) {
+            // file doesnt exist in this directory
+            prefix += "../";
+            counter++;
+        }
+    }
+    if(fileBuffer) {
+        return fileBuffer;
+    } else {
+        throw new Error("File not Found");
+    }
+};
 /**
- * Gives the current origin url from .git/config 
- * this might be a problem later on because it only works 
+ * Gives the current origin url from .git/config
+ * this might be a problem later on because it only works
  * in the root path of the project (the location where .git/config is located)
- * @param {string} path 
+ * @param {string} path
  */
 const getGithubUrlInPath = async (path) => {
-    const fileBuffer = await readFile(path + '/.git/config')
+    try {
+        const fileBuffer = await readFileRecursivelyUpwards(path, 3);
+    } catch(e) {
+        throw new Error("Please check your current path, .git/config couldnt be found")
+    }
+
     const result = gitHubUrlRegExp().exec(fileBuffer.toString());
     if (result != null) {
         return result[2]
